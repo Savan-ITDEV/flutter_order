@@ -38,15 +38,17 @@ class _PaymentPageState extends State<PaymentPage> {
                 itemCount: _filteredMenuItems.length,
                 itemBuilder: (context, index) {
                   final menuItem = _filteredMenuItems[index];
-                  return ListTile(
-                      title: Row(
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
                         children: [
                           Text('${index + 1} .'),
-                          Text(menuItem['title'].toString(),
+                          Text(menuItem['strMeal'].toString(),
                               overflow: TextOverflow.ellipsis),
                         ],
                       ),
-                      trailing: IconButton(
+                      IconButton(
                           onPressed: () {
                             if (_filteredMenuItems.isNotEmpty) {
                               Get.defaultDialog(
@@ -66,13 +68,16 @@ class _PaymentPageState extends State<PaymentPage> {
                                   Get.back();
                                   setState(() {
                                     _filteredMenuItems.removeWhere((element) =>
-                                        element['id'] == menuItem['id']);
+                                        element['idMeal'] ==
+                                        menuItem['idMeal']);
                                   });
                                 },
                               );
                             }
                           },
-                          icon: const Icon(Icons.delete_forever)));
+                          icon: const Icon(Icons.delete_forever))
+                    ],
+                  );
                 },
               ),
             ),
@@ -93,22 +98,37 @@ class _PaymentPageState extends State<PaymentPage> {
                           backgroundColor:
                               MaterialStateProperty.all(Colors.pink[400])),
                       onPressed: () {
-                        Get.defaultDialog(
-                          title: 'การแจ้งเตือน',
-                          middleText: 'คุณต้องการชำระเงินหรือไม่?',
-                          backgroundColor: Colors.white,
-                          titleStyle: const TextStyle(color: Colors.red),
-                          middleTextStyle: const TextStyle(color: Colors.grey),
-                          radius: 6,
-                          textConfirm: 'ยืนยัน',
-                          textCancel: 'ยกเลิก',
-                          cancelTextColor: Colors.grey,
-                          confirmTextColor: Colors.white,
-                          buttonColor: Colors.red,
-                          onConfirm: () {
-                            Get.offAllNamed("/CheckOutPage");
-                          },
-                        );
+                        //ถ้ามีข้อมูลแล้วให้สามารถสั่งได้
+                        if (_filteredMenuItems.isNotEmpty) {
+                          Get.defaultDialog(
+                            title: 'การแจ้งเตือน',
+                            middleText: 'คุณต้องการชำระเงินหรือไม่?',
+                            backgroundColor: Colors.white,
+                            titleStyle: const TextStyle(color: Colors.red),
+                            middleTextStyle:
+                                const TextStyle(color: Colors.grey),
+                            radius: 6,
+                            textConfirm: 'ยืนยัน',
+                            textCancel: 'ยกเลิก',
+                            cancelTextColor: Colors.grey,
+                            confirmTextColor: Colors.white,
+                            buttonColor: Colors.red,
+                            onConfirm: () {
+                              Get.offAllNamed("/CheckOutPage");
+                            },
+                          );
+                        } else {
+                          //ถ้าไม่มีข้อมูลให้แจ้งเตือน
+                          Get.snackbar(
+                            'การแจ้งเตือน',
+                            'กรุณาเลือกรายการก่อน!',
+                            backgroundColor: Colors.pink[200],
+                            colorText: Colors.white,
+                            icon: const Icon(Icons.warning_rounded,
+                                color: Colors.white),
+                            snackPosition: SnackPosition.TOP,
+                          );
+                        }
                       },
                       child: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
